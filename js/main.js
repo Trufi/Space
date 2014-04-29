@@ -17,7 +17,16 @@ function create() {
 }
 
 function update() {
-//    sprite.body.applyForce([1, 0], 100, 100);
+    var alpha = -sprite.angle,
+        a = 50,
+    /*  b = Math.tan(alpha) * a,
+     y = Math.cos(alpha) * (a + b),
+     x = Math.sqrt(a * a + b * b) - y * Math.tan(alpha);*/
+        x = a * Math.cos(alpha) - a * Math.sin(alpha),
+        y = - a * Math.sin(alpha) + a * Math.cos(alpha);
+
+    sprite.body.applyForce([Math.cos(alpha) - Math.sin(alpha), Math.sin(alpha) + Math.cos(alpha)], x, y);
+    s = 5;
 }
 
 function render() {

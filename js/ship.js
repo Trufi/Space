@@ -1,4 +1,4 @@
-function Ship(param) {
+function Ship (param) {
     this._color = 0xffffff;
     this._size = 50;
     this._weight = 100;
@@ -16,15 +16,17 @@ function Ship(param) {
     };
 
     this._sprite = game.add.sprite(this._position.x, this._position.y, 'ship');
-    this._sprite.inputEnabled = true;
+    this._sprite.anchor.setTo(0.5, 0.5);
+
     sprite = this._sprite;
     game.physics.p2.enable(this._sprite);
 
     this._sprite.body.mass = 10;
-//    this._sprite.body.applyForce(7, 5, 5);
+    // this._sprite.body.data.velocity[0] = -10;
 }
 
 Ship.prototype.rotate = function (deg) {
+    this._sprite.body.rotation += deg;
 
     return this;
 }

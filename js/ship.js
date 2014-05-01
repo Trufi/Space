@@ -6,6 +6,9 @@ function Ship (param) {
     this.weight = 100;
     this.forceThrust = 1000;
     this.forceSide = 10;
+    this.maxAngularVelocity = 7;
+    this.autoBrakingAngularVelocity = true;
+    // this.maxVelocity = 15;
 
     this.speed = {
         x: 0,
@@ -18,9 +21,6 @@ function Ship (param) {
     };
 
     this.initPhysics();
-
-    // debug
-    sprite = this.sprite;
 }
 
 Ship.prototype.initPhysics = function () {
@@ -34,10 +34,11 @@ Ship.prototype.initPhysics = function () {
 }
 
 Ship.prototype.thrust = function () {
-    var point1 = this.worldPoint([0, 30]),
+    var df = this.timeForce(this.forceThrust),
+        point1 = this.worldPoint([0, 30]),
         point2 = this.worldPoint([0, 40]);
 
-    this.body.thrust(this.forceThrust);
+    this.body.thrust(df);
 
     graphics.lineStyle(15, 0xFFFFFF, 1);
     graphics.beginFill();
@@ -46,17 +47,36 @@ Ship.prototype.thrust = function () {
     graphics.endFill();
 }
 
+Ship.prototype.reverse = function () {
+    var df = this.timeForce(this.forceSide),
+        angle = this.body.rotation - Math.PI / 2,
+        point1 = this.worldPoint([0, -30]),
+        point2 = this.worldPoint([0, -40]),
+        force = [df * Math.cos(angle), df * Math.sin(angle)];
+
+    this.body.applyForce(force, point1[0], point1[1]);
+
+    graphics.lineStyle(5, 0xFFFFFF, 1);
+    graphics.beginFill();
+    graphics.moveTo(point1[0], point1[1]);
+    graphics.lineTo(point2[0], point2[1]);
+    graphics.endFill();
+}
+
 Ship.prototype.left = function () {
-    var angle = this.body.rotation/* + Math.PI / 2*/,
+    var df = this.timeForce(this.forceSide),
+        angle = this.body.rotation/* + Math.PI / 2*/,
         point = this.worldPoint([20, -20]),
         point2 = this.worldPoint([30, -20]),
         pointBack = this.worldPoint([-20, 20]),
         pointBack2 = this.worldPoint([-30, 20]),
-        force = [this.forceSide * Math.cos(angle), this.forceSide * Math.sin(angle)],
+        force = [df * Math.cos(angle), df * Math.sin(angle)],
         forceBack = [-force[0], -force[1]];
 
-    this.body.applyForce(force, point[0], point[1]);
-    this.body.applyForce(forceBack, pointBack[0], pointBack[1]);
+    if (-this.body.angularVelocity < this.maxAngularVelocity) {
+        this.body.applyForce(force, point[0], point[1]);
+        this.body.applyForce(forceBack, pointBack[0], pointBack[1]);
+    }
 
     graphics.lineStyle(5, 0xFFFFFF, 1);
     graphics.beginFill();
@@ -71,16 +91,19 @@ Ship.prototype.left = function () {
 }
 
 Ship.prototype.right = function () {
-    var angle = this.body.rotation + Math.PI,
+    var df = this.timeForce(this.forceSide),
+        angle = this.body.rotation + Math.PI,
         point = this.worldPoint([-20, -20]),
         point2 = this.worldPoint([-30, -20]),
         pointBack = this.worldPoint([20, 20]),
         pointBack2 = this.worldPoint([30, 20]),
-        force = [this.forceSide * Math.cos(angle), this.forceSide * Math.sin(angle)],
+        force = [df * Math.cos(angle), df * Math.sin(angle)],
         forceBack = [-force[0], -force[1]];
 
-    this.body.applyForce(force, point[0], point[1]);
-    this.body.applyForce(forceBack, pointBack[0], pointBack[1]);
+    if (this.body.angularVelocity < this.maxAngularVelocity) {
+        this.body.applyForce(force, point[0], point[1]);
+        this.body.applyForce(forceBack, pointBack[0], pointBack[1]);
+    }
 
     graphics.lineStyle(5, 0xFFFFFF, 1);
     graphics.beginFill();
@@ -92,6 +115,73 @@ Ship.prototype.right = function () {
     graphics.lineTo(pointBack2[0], pointBack2[1]);
 
     graphics.endFill();
+}
+
+Ship.prototype.brakingAngularVelocity = function (buttonDown) {
+    var eps = 0.1;
+
+    // XOR
+    if ((this.autoBrakingAngularVelocity || buttonDown) && !(this.autoBrakingAngularVelocity && buttonDown)) {
+        if (this.body.angularVelocity > eps) {
+            this.left();
+        } else if (this.body.angularVelocity < -eps) {
+            this.right();
+        } else {
+            this.body.angularVelocity = 0;
+        }
+    }
+}
+
+Ship.prototype.strafeLeft = function () {
+    var df = this.timeForce(this.forceSide),
+        angle = this.body.rotation,
+        point = this.worldPoint([20, -20]),
+        point2 = this.worldPoint([30, -20]),
+        pointBack = this.worldPoint([20, 20]),
+        pointBack2 = this.worldPoint([30, 20]),
+        force = [df * Math.cos(angle), df * Math.sin(angle)];
+
+    this.body.applyForce(force, point[0], point[1]);
+    this.body.applyForce(force, pointBack[0], pointBack[1]);
+
+    graphics.lineStyle(5, 0xFFFFFF, 1);
+    graphics.beginFill();
+
+    graphics.moveTo(point[0], point[1]);
+    graphics.lineTo(point2[0], point2[1]);
+
+    graphics.moveTo(pointBack[0], pointBack[1]);
+    graphics.lineTo(pointBack2[0], pointBack2[1]);
+
+    graphics.endFill();
+}
+
+Ship.prototype.strafeRight = function () {
+    var df = this.timeForce(this.forceSide),
+        angle = this.body.rotation + Math.PI,
+        point = this.worldPoint([-20, -20]),
+        point2 = this.worldPoint([-30, -20]),
+        pointBack = this.worldPoint([-20, 20]),
+        pointBack2 = this.worldPoint([-30, 20]),
+        force = [df * Math.cos(angle), df * Math.sin(angle)];
+
+    this.body.applyForce(force, point[0], point[1]);
+    this.body.applyForce(force, pointBack[0], pointBack[1]);
+
+    graphics.lineStyle(5, 0xFFFFFF, 1);
+    graphics.beginFill();
+
+    graphics.moveTo(point[0], point[1]);
+    graphics.lineTo(point2[0], point2[1]);
+
+    graphics.moveTo(pointBack[0], pointBack[1]);
+    graphics.lineTo(pointBack2[0], pointBack2[1]);
+
+    graphics.endFill();
+}
+
+Ship.prototype.timeForce = function (force) {
+    return game.time.physicsElapsed * 100 * force;
 }
 
 Ship.prototype.worldPoint = function (point) {

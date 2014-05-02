@@ -27,8 +27,8 @@ function createAsteroid2 (position) {
 
 
     asteroid.body.angularVelocity = (Math.random() - 0.5) / 5;
-    asteroid.body.data.velocity[0] = (Math.random() - 0.5) * 10;
-    asteroid.body.data.velocity[1] = (Math.random() - 0.5) * 10;
+    asteroid.body.data.velocity[0] = (Math.random() - 0.5) * 15;
+    asteroid.body.data.velocity[1] = (Math.random() - 0.5) * 15;
 
     return asteroid;
 }

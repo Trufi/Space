@@ -4,12 +4,13 @@ var playerShip;
 var graphics;
 var cursors;
 var keyboard;
-
+var worldSize = [5000, 5000];
+var background;
 var asteroid,
     asteroid2;
 
 function preload() {
-    game.load.image('background', 'img/bg.jpeg');
+    game.load.image('background', 'img/bg2.png');
     game.load.image('ship', 'img/ship2.png');
     game.load.image('asteroid', 'img/asteroid.png');
     game.load.image('asteroid2', 'img/asteroid2.png');
@@ -17,8 +18,10 @@ function preload() {
 }
 
 function create() {
-    game.world.setBounds(0, 0, 1920, 1200);
-    game.add.sprite(0, 0, 'background');
+    var i;
+
+    game.world.setBounds(0, 0, worldSize[0], worldSize[1]);
+    background = game.add.tileSprite(0, 0, worldSize[0], worldSize[1], 'background');
 
     game.physics.startSystem(Phaser.Physics.P2JS);
     game.physics.p2.world.applyDamping = false;
@@ -35,11 +38,12 @@ function create() {
     game.camera.follow(playerShip.sprite);
 
     // asteroids
-    asteroid = createAsteroid([500, 400]);
-    createAsteroid([1200, 600]);
-    asteroid2 = createAsteroid2([100, 500]);
-    createAsteroid2([800, 150]);
-    createAsteroid2([1300, 450]);
+    for (i = 0; i < 30; i++) {
+        createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]);
+    }
+    for (i = 0; i < 30; i++) {
+        createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]);
+    }
 }
 
 function update() {
@@ -77,6 +81,6 @@ function update() {
 
 function render() {
     game.debug.spriteInfo(playerShip.sprite, 32, 500);
-/*    game.debug.text('fps:' + game.time.fps, 32, 400);
-    game.debug.text('physicsElapsed:' + game.time.physicsElapsed, 32, 450);*/
+    game.debug.text('fps:' + game.time.fps, 32, 400);
+    /*game.debug.text('physicsElapsed:' + game.time.physicsElapsed, 32, 450);*/
 }

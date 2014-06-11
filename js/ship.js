@@ -31,6 +31,11 @@ Ship.prototype.initPhysics = function () {
     this.body = this.sprite.body;
 
     this.body.mass = 10;
+
+    this.body.setCollisionGroup(collisionGroup);
+    this.body.collides([collisionGroup]);
+
+    bodyArray.push(this.sprite);
 }
 
 Ship.prototype.thrust = function () {

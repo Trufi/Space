@@ -8,6 +8,9 @@ var worldSize = [5000, 5000];
 var background;
 var asteroid,
     asteroid2;
+var collisionGroup;
+
+var bodyArray = [];
 
 function preload() {
     game.load.image('background', 'img/bg2.png');
@@ -26,6 +29,7 @@ function create() {
     game.physics.startSystem(Phaser.Physics.P2JS);
     game.physics.p2.world.applyDamping = false;
     game.physics.p2.useElapsedTime = true;
+    game.physics.p2.setBounds(0, 0, worldSize[0], worldSize[1], false, false, false, false, false);
 
     game.time.advancedTiming = true;
 
@@ -33,16 +37,18 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     keyboard = game.input.keyboard;
 
+    collisionGroup = game.physics.p2.createCollisionGroup();
+
     // create player ship
     playerShip = new Ship();
     game.camera.follow(playerShip.sprite);
 
     // asteroids
     for (i = 0; i < 30; i++) {
-        createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]);
+        //bodyArray.push(createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
     for (i = 0; i < 30; i++) {
-        createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]);
+        //bodyArray.push(createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
 }
 
@@ -77,6 +83,62 @@ function update() {
     if (!cursors.left.isDown && !cursors.right.isDown && !keyboard.isDown(Phaser.Keyboard.A) && !keyboard.isDown(Phaser.Keyboard.D)) {
         playerShip.brakingAngularVelocity(keyboard.isDown(Phaser.Keyboard.CONTROL));
     }
+
+    // проверка на выход за границы
+/*    (function() {
+        var max = bodyArray.length,
+            i = 0,
+            el;
+
+        function changeCoord(x) {
+            var pixelX = -20 * x;
+
+            if (pixelX > worldSize[0]) {
+                pixelX = pixelX % worldSize[0];
+                x = pixelX / (-20);
+            } else if (pixelX < 0) {
+                pixelX = worldSize[0] + pixelX;
+                x = pixelX / (-20);
+            }
+
+            return x;
+        }
+
+        for (i = 0; i < max; i++) {
+            el = bodyArray[i];
+
+            el.body.data.position[0] = changeCoord(el.body.data.position[0]);
+            el.body.data.position[1] = changeCoord(el.body.data.position[1]);
+        }
+    })();*/
+
+    // Имитация черной дыры
+    (function() {
+        var max = bodyArray.length,
+            i = 0,
+            el;
+
+        function changeCoord(x) {
+            var pixelX = -20 * x;
+
+            if (pixelX > worldSize[0]) {
+                pixelX = pixelX % worldSize[0];
+                x = pixelX / (-20);
+            } else if (pixelX < 0) {
+                pixelX = worldSize[0] + pixelX;
+                x = pixelX / (-20);
+            }
+
+            return x;
+        }
+
+        for (i = 0; i < max; i++) {
+            el = bodyArray[i];
+
+            
+        }
+    })();
+
 }
 
 function render() {

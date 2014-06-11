@@ -7,6 +7,10 @@ function createAsteroid(position) {
     asteroid.body.mass = 100;
     asteroid.body.rotation = Math.random() * Math.PI;
 
+    asteroid.body.setCollisionGroup(collisionGroup);
+    asteroid.body.collides([collisionGroup]);
+
+    // не работает asteroid.body.data.on('sleep', function() {console.log('sleep!!!');});    
 
     asteroid.body.angularVelocity = (Math.random() - 0.5) / 2;
     asteroid.body.data.velocity[0] = (Math.random() - 0.5) * 2;
@@ -25,6 +29,10 @@ function createAsteroid2 (position) {
     asteroid.body.mass = 50;
     asteroid.body.rotation = Math.random() * Math.PI;
 
+    asteroid.body.setCollisionGroup(collisionGroup);
+    asteroid.body.collides([collisionGroup]);
+
+    asteroid.body.data.on('sleep', function() {console.log('sleep!!!');});
 
     asteroid.body.angularVelocity = (Math.random() - 0.5) / 5;
     asteroid.body.data.velocity[0] = (Math.random() - 0.5) * 15;

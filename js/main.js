@@ -35,7 +35,7 @@ function create() {
     game.physics.startSystem(Phaser.Physics.P2JS);
     game.physics.p2.world.applyDamping = false;
     game.physics.p2.useElapsedTime = true;
-    game.physics.p2.setBounds(0, 0, worldSize[0], worldSize[1], false, false, false, false, false);
+    //game.physics.p2.setBounds(0, 0, worldSize[0], worldSize[1], false, false, false, false, false);
 
     game.time.advancedTiming = true;
 

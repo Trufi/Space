@@ -51,10 +51,10 @@ function create() {
 
     // asteroids
     for (i = 0; i < 30; i++) {
-        bodyArray.push(createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
+        //bodyArray.push(createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
     for (i = 0; i < 30; i++) {
-        bodyArray.push(createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
+       // bodyArray.push(createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
 
     // blackhole

@@ -9,12 +9,18 @@ var background;
 var asteroid,
     asteroid2;
 var collisionGroup;
+var blackhole;
 
 var bodyArray = [];
+
+function dist(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+}
 
 function preload() {
     game.load.image('background', 'img/bg2.png');
     game.load.image('ship', 'img/ship2.png');
+    game.load.image('blackhole', 'img/blackhole.png');
     game.load.image('asteroid', 'img/asteroid.png');
     game.load.image('asteroid2', 'img/asteroid2.png');
     game.load.physics('physicsData', 'js/asteroid_polygon.json');
@@ -45,11 +51,16 @@ function create() {
 
     // asteroids
     for (i = 0; i < 30; i++) {
-        //bodyArray.push(createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
+        bodyArray.push(createAsteroid([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
     for (i = 0; i < 30; i++) {
-        //bodyArray.push(createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
+        bodyArray.push(createAsteroid2([Math.random() * worldSize[0], Math.random() * worldSize[1]]));
     }
+
+    // blackhole
+    blackhole = game.add.sprite(2500, 2500, 'blackhole');
+    game.physics.p2.enable(blackhole);
+    blackhole.body.data.mass = 0;
 }
 
 function update() {
@@ -118,24 +129,15 @@ function update() {
             i = 0,
             el;
 
-        function changeCoord(x) {
-            var pixelX = -20 * x;
+        var df = game.time.physicsElapsed * 5000000,
+            d, force;
 
-            if (pixelX > worldSize[0]) {
-                pixelX = pixelX % worldSize[0];
-                x = pixelX / (-20);
-            } else if (pixelX < 0) {
-                pixelX = worldSize[0] + pixelX;
-                x = pixelX / (-20);
-            }
-
-            return x;
-        }
 
         for (i = 0; i < max; i++) {
             el = bodyArray[i];
-
-            
+            d = dist(blackhole.position.x, blackhole.position.y, el.position.x, el.position.y);
+            force = [(el.position.x - blackhole.position.x) * df / d / d, (el.position.y - blackhole.position.y) * df / d / d];
+            el.body.applyForce(force, el.position.x, el.position.y);
         }
     })();
 
